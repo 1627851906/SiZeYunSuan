@@ -24,6 +24,8 @@ public class Questions {
         setQuestionsNum();
         printQuestions(qNumber);
         System.out.println("完成所有题目，你的得分为：" + grade);
+        Scanner scanner = new Scanner(System.in);
+        scanner.nextLine();
     }
 
     private static int getPosition(Character sign) {
