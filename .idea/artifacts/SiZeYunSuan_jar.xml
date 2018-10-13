@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="SiZeYunSuan:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/SiZeYunSuan_jar</output-path>
+    <root id="archive" name="SiZeYunSuan.jar">
+      <element id="module-output" name="SiZeYunSuan" />
+    </root>
+  </artifact>
+</component>
