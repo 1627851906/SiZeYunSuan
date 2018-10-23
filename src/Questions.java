@@ -6,8 +6,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Questions {
-    //tianjiadaogit
-    private static int grade=0;
+    public static int grade=0;
     private static int qNumber;
     private static Stack<Float> operatedNumber = new Stack<Float>();
     private static Stack<Character> operatedSign = new Stack<Character>();
@@ -21,11 +20,10 @@ public class Questions {
     public static void main(String[] args) {
         // TODO Auto-generated method stub
         System.out.println("若答案为无理小数，则四舍五入保留两位小数，回答正确一题得一分");
-        setQuestionsNum();
-        printQuestions(qNumber);
+        //setQuestionsNum();
+//        printQuestions(qNumber);
         System.out.println("完成所有题目，你的得分为：" + grade);
-        Scanner scanner = new Scanner(System.in);
-        scanner.nextLine();
+
     }
 
     private static int getPosition(Character sign) {
@@ -59,35 +57,36 @@ public class Questions {
 
     private static void setElements() {
         int index;
-        int number;
         int parent = 0;
         boolean flag = true;
-        signCount = (int) (Math.random() * 4) + 2;
+        signCount = (int) (Math.random() * 4) + 1;
         operatedSign.add('=');
         for (int i = 0; i < signCount; i++) {
-            index = (int) (Math.random() * 5);
+            if (flag) {
+                index = (int) (Math.random() * 5);
+            } else {
+                index = (int) (Math.random() * 4);
+            }
             if(flag && signArray[index] == '/') {
                 operatedSign.add(signArray[index]);
-                number = (int) (Math.random() * 99) + 2;
-                parent = number;
-                operatedNumber.add((float)number);
+                parent = (int) (Math.random() * 99) + 2;
+                operatedNumber.add((float)parent);
                 flag = false;
-                continue;
-            }
-            addNumber(flag,parent);
-            while(signArray[index] == '/') {
-                index = (int) (Math.random() * 5);
+                addNumber(flag, parent);
+                index = (int) (Math.random() * 4);
+            } else {
+                addNumber(true);
             }
             operatedSign.add(signArray[index]);
         }
-        addNumber(flag,parent);
+        addNumber(true);
         addKuohao();
     }
 
-    private static void addNumber(boolean flag,int parent) {
+    private static void addNumber(boolean flag,int... parent) {
         int number;
         if(!flag) {
-            number = (int)(Math.random() * (parent-1)) + 1;
+            number = (int)(Math.random() * (parent[0]-1)) + 1;
             operatedNumber.add((float)number);
         }
         else {
@@ -95,6 +94,7 @@ public class Questions {
             operatedNumber.add((float)number);
         }
     }
+
     public static void addKuohao() {
         boolean flag = false;
         for (int i = operatedSign.size()-1; i > 1; i--) {
@@ -196,7 +196,7 @@ public class Questions {
         return operatedNumber.get(0);
     }
 
-    private static void printQuestions(int qNumber) {
+    public static void printQuestions(int qNumber) {
         Stack<Float> tempNumber = new Stack<Float>();
         Stack<Character> tempSign = new Stack<Character>();
         for (int i = 0; i < qNumber; i++) {
@@ -208,7 +208,7 @@ public class Questions {
                 reset();
                 continue;
             }
-            System.out.print("第" + (i + 1) + "题 :");
+           // System.out.print("第" + (i + 1) + "题 :");
             for (int k=operatedSign.size()-1,j = operatedNumber.size()-1; j > -1&&k>-1; j--,k--) {
                 expression.append(operatedNumber.get(j).intValue());
                 expression.append(operatedSign.get(k));
@@ -221,9 +221,10 @@ public class Questions {
                     k--;
                 }
             }
-            System.out.print(expression);
-            getResult(operatedNumber, operatedSign);
-            answerCheck(inputAnswer());
+            //System.out.print(expression);
+            Main.setQuestion(expression.toString());
+            Main.getAnswer(getResult(operatedNumber, operatedSign));
+            //answerCheck(inputAnswer());
             expression.delete(0, expression.length());
             reset();
         }
@@ -247,14 +248,14 @@ public class Questions {
         }
         return sign;
     }
-    private static Float inputAnswer() {
-        String answer = null;
+    public static Float inputAnswer(String in) {
+        String answer = in;
         String pattern = "(\\d+)/(\\d+)";
-        Scanner in = new Scanner(System.in);
+       // Scanner in = new Scanner(System.in);
         boolean isVaild = false;
         while (!isVaild) {
             try {
-                answer = in.nextLine();
+                //answer = in.nextLine();
                 isVaild = true;
                 Pattern p = Pattern.compile(pattern);
                 Matcher matcher = p.matcher(answer);
@@ -266,20 +267,24 @@ public class Questions {
                 }
             }
             catch (Exception e) {
-                System.out.println("输入错误！请重新输入");
-                in.nextLine();
+                return (float)-1;
+                //System.out.println("输入错误！请重新输入");
+                //in.nextLine();
             }
         }
         return Float.parseFloat("0");
     }
-    private static void answerCheck(Float answer) {
+    public static String answerCheck(Float questionAnswer, Float myAnswer) {
+        String messege = "";
         DecimalFormat df = new DecimalFormat("0.00");
-        if (Math.abs(Float.parseFloat(df.format(answer)) - Float.parseFloat(df.format(operatedNumber.get(0))))<=0) {
-            System.out.println("答案正确，回答下一个问题：");
+        if (Math.abs(Float.parseFloat(df.format(myAnswer)) - Float.parseFloat(df.format(questionAnswer)))<=0) {
+            messege = "答案正确!";
             grade++;
+            return messege;
         }
         else {
-            System.out.println("答案错误，正确答案为：" + df.format(operatedNumber.get(0))+",回答下一个问题：");
+            messege = "答案错误，正确答案为：" + df.format(questionAnswer);
+            return messege;
         }
     }
     private static void reset() {
